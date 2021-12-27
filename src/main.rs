@@ -3,9 +3,11 @@ mod days;
 use std::env;
 use std::process::exit;
 use crate::days::day1::day1;
+use crate::days::day2::day2;
 
-const DAYS: [fn(&[String]) -> ();1] = [
-    day1
+const DAYS: [fn(&[String]) -> (); 2] = [
+    day1,
+    day2,
 ];
 
 const NR_OF_DAYS: u32 = DAYS.len() as u32;
