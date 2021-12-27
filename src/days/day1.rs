@@ -8,6 +8,8 @@ pub fn day1(args: &[String]) -> () {
     let mut reader = BufReader::new(f);
     let numbers = parse(&mut reader);
     println!("Part One: {}", part1(&numbers));
+    println!("Part Two: {}", part2(&numbers));
+
 }
 
 fn parse(reader: &mut BufReader<File>) -> Vec<u32> {
@@ -39,4 +41,24 @@ fn part1(numbers: &Vec<u32>) -> u32 {
         first = false
     }
     result
+}
+
+fn part2(numbers: &Vec<u32>) -> u32 {
+    match numbers.len() {
+        0..=3 => 0,
+        _ => {
+            let mut prev: usize = 0;
+            let mut prev_sum: u32 = numbers[0..3].iter().sum();
+            let mut result: u32 = 0;
+            for i in numbers[3..].iter() {
+                let new_sum = prev_sum - numbers[prev] + i;
+                if new_sum > prev_sum {
+                    result += 1
+                }
+                prev_sum = new_sum;
+                prev += 1;
+            }
+            result
+        }
+    }
 }
