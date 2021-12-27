@@ -14,6 +14,7 @@ pub fn day2(args: &[String]) -> () {
     let mut reader = BufReader::new(f);
     let data = parse(&mut reader);
     println!("Part One: {}", part1(&data));
+    println!("Part Two: {}", part2(&data));
 }
 
 fn parse(reader: &mut BufReader<File>) -> Vec<Movement> {
@@ -50,6 +51,16 @@ fn part1(movements: &Vec<Movement>) -> i32 {
         Up(amount) => (depth - amount, distance),
         Down(amount) => (depth + amount, distance),
         Forward(amount) => (depth, distance + amount)
+    });
+    depth * distance
+}
+
+fn part2(movements: &Vec<Movement>) -> i32 {
+    let (depth, distance, _) = movements.iter().fold((0, 0, 0), |(depth, distance, aim), movement|
+        match movement {
+        Up(amount) => (depth, distance, aim - amount),
+        Down(amount) => (depth, distance, aim + amount),
+        Forward(amount) => (depth + aim * amount, distance + amount, aim)
     });
     depth * distance
 }
