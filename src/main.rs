@@ -26,5 +26,5 @@ fn main() {
     (match day_arg {
         1 ..= NR_OF_DAYS => DAYS[day_arg as usize - 1],
         _ => missing_day
-    })(&args[1..])
+    })(&args[2..])
 }
