@@ -1,34 +1,23 @@
-mod days;
-
 use std::env;
-use std::process::exit;
-use crate::days::day1::day1;
-use crate::days::day2::day2;
-use crate::days::day3::day3;
+use std::fs::{File};
+use std::io::{BufRead, BufReader, stdin};
 
-const DAYS: [fn(&[String]) -> (); 3] = [
-    day1,
-    day2,
-    day3,
-];
+use crate::days::days::{get_result_for_day, NR_OF_DAYS};
 
-const NR_OF_DAYS: u32 = DAYS.len() as u32;
-
-fn missing_day(args: &[String]) {
-    assert_eq!(args.len(), 1);
-    eprintln!("No implementation for day {}", args[0]);
-    exit(1);
-}
+mod days;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
+    let usage = format!("Usage: {} <day (1-{})> [file]", args[0], NR_OF_DAYS - 1);
     let day_arg = args
         .get(1)
         .map(|arg: &String| {arg.parse::<u32>()})
-        .unwrap_or_else(|| {eprintln!("Missing day argument"); exit(1)})
-        .unwrap_or_else(|s| {eprintln!("Cannot parse argument: {}", s); exit(1)});
-    (match day_arg {
-        1 ..= NR_OF_DAYS => DAYS[day_arg as usize - 1],
-        _ => missing_day
-    })(&args[2..])
+        .expect(&usage)
+        .expect(&usage);
+    let mut reader: Box<dyn BufRead> = args.get(2)
+        .map(|arg: &String| File::open(arg).expect("Could not open file!"))
+        .map_or::<Box<_>, _>(Box::new(BufReader::new(stdin())), |file| Box::new(BufReader::new(file)));
+    let (part1, part2) = get_result_for_day(&mut reader, day_arg);
+    println!("Part One: {}", part1);
+    println!("Part Two: {}", part2);
 }
