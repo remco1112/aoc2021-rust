@@ -57,7 +57,8 @@ impl Day<Input> for Day4 {
     }
 
     fn part2(input: &Input) -> u32 {
-        todo!()
+        let (drawn_numbers, last_draw, board_index) = Self::get_last_winning_board(input);
+        Self::get_score(&input.boards[board_index], &drawn_numbers, last_draw)
     }
 }
 
@@ -70,20 +71,7 @@ impl Day4 {
                     for col in 0..5 {
                         if input.boards[board][row][col] == draw {
                             boards[board][row][col] = 1;
-                            let mut has_row = true;
-                            let mut has_col = true;
-                            for check in 0..5 {
-                                if boards[board][check][col] == 0 {
-                                    has_col = false;
-                                }
-                                if boards[board][row][check] == 0 {
-                                    has_row = false;
-                                }
-                                if !has_row && !has_col {
-                                    break;
-                                }
-                            }
-                            if has_row || has_col {
+                            if Self::has_won(&boards[board], row, col) {
                                 return (boards[board], draw, board);
                             }
                         }
@@ -104,5 +92,48 @@ impl Day4 {
             }
         }
         sum * draw
+    }
+
+    fn get_last_winning_board(input: &Input) -> ([[u32; 5]; 5], u32, usize) {
+        let mut boards: Vec<[[u32; 5]; 5]> = vec![Default::default(); input.boards.len()];
+        let mut last_board : (u32, usize) = Default::default();
+        let mut won_boards: Vec<bool> = vec![false; input.boards.len()];
+        for &draw in &input.draws {
+            'board: for board in 0..boards.len() {
+                if  won_boards[board] {
+                    continue;
+                }
+                for row in 0..5 {
+                    for col in 0..5 {
+                        if input.boards[board][row][col] == draw {
+                            boards[board][row][col] = 1;
+                            if Self::has_won(&boards[board], row, col) {
+                                last_board = (draw, board);
+                                won_boards[board] = true;
+                                continue 'board;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        (boards[last_board.1], last_board.0, last_board.1)
+    }
+
+    fn has_won(board: &[[u32; 5]; 5], row: usize, col: usize) -> bool {
+        let mut has_row = true;
+        let mut has_col = true;
+        for check in 0..5 {
+            if board[check][col] == 0 {
+                has_col = false;
+            }
+            if board[row][check] == 0 {
+                has_row = false;
+            }
+            if !has_row && !has_col {
+                break;
+            }
+        }
+        has_row || has_col
     }
 }
